@@ -2,7 +2,7 @@
 % Please edit documentation in R/tab_functions.R
 \name{pretty_col_name}
 \alias{pretty_col_name}
-\title{Convert machine-readable tab column names to human-readable names.}
+\title{Clean Up Column Names}
 \usage{
 pretty_col_name(col_name)
 }

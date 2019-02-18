@@ -2,10 +2,10 @@
 % Please edit documentation in R/tab_functions.R
 \name{wtab}
 \alias{wtab}
-\title{Run weighted crosstabs on one or two variables, using quoted inputs.}
+\title{Weighted Tabs}
 \usage{
 wtab(df, v1, v2 = "NULL", weight_var = NULL, sdesign = NULL,
-  nsize = FALSE, ci = FALSE)
+  nsize = FALSE, ci = FALSE, to_factor = TRUE)
 }
 \arguments{
 \item{df}{input dataframe}
@@ -21,6 +21,8 @@ wtab(df, v1, v2 = "NULL", weight_var = NULL, sdesign = NULL,
 \item{nsize}{boolean flag to include n-sizes in output.  DEFAULT FALSE}
 
 \item{ci}{boolean flag to include lower- and upper- bounds of confidence intervals.  DEFAULT FALSE}
+
+\item{to_factor}{boolean flag to convert v1/v2 to factors, if needed.  DEFAULT TRUE}
 }
 \value{
 dataframe of tab results

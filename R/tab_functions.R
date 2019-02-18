@@ -1,9 +1,11 @@
 ### tab functions
 # Jesse Zlotoff
-# 2/14/19
+# 2/18/19
 
 library(survey)
 
+#' Reorder Tab Columns
+#'
 #' Reorder dataframe columns to display in logical order for tabs.
 #'
 #' @param df dataframe to edit
@@ -34,6 +36,8 @@ reorder_columns <- function(df) {
 }
 
 
+#' Weighted Tabs
+#'
 #' Run weighted crosstabs on one or two variables, using quoted inputs.
 #'
 #' @param df input dataframe
@@ -43,9 +47,10 @@ reorder_columns <- function(df) {
 #' @param sdesign survey package surveydesign object.  DEFAULT NULL
 #' @param nsize boolean flag to include n-sizes in output.  DEFAULT FALSE
 #' @param ci boolean flag to include lower- and upper- bounds of confidence intervals.  DEFAULT FALSE
+#' @param to_factor boolean flag to convert v1/v2 to factors, if needed.  DEFAULT TRUE
 #' @return dataframe of tab results
 #' @export
-wtab <- function(df, v1, v2 = "NULL", weight_var = NULL, sdesign = NULL, nsize = FALSE, ci = FALSE) {
+wtab <- function(df, v1, v2 = "NULL", weight_var = NULL, sdesign = NULL, nsize = FALSE, ci = FALSE, to_factor=TRUE) {
 
     require(dplyr)
     require(tibble)
@@ -60,6 +65,27 @@ wtab <- function(df, v1, v2 = "NULL", weight_var = NULL, sdesign = NULL, nsize =
             rename_("vv2" = v2) %>%
             filter(!is.na(vv2))
     }
+
+    # check that v1/v2 are factors
+    if (!is.factor(df$vv1)) {
+        if (to_factor==TRUE) {
+            df$vv1 <- as.factor(df$vv1)
+        } else {
+            stop(v1, ' is not a factor variable.  Set to_factor=TRUE to automatically convert it.')
+            geterrmessage()
+        }
+    }
+    if (v2!="NULL") {
+        if (!is.factor(df$vv2)) {
+            if (to_factor==TRUE) {
+                df$vv2 <- as.factor(df$vv2)
+            } else {
+                stop(v2, ' is not a factor variable.  Set to_factor=TRUE to automatically convert it.')
+                geterrmessage()
+            }
+        }
+    }
+
 
     if (is.null(sdesign)) { # need to build svy design
         wform <- reformulate(weight_var)
@@ -160,6 +186,8 @@ wtab <- function(df, v1, v2 = "NULL", weight_var = NULL, sdesign = NULL, nsize =
 }
 
 
+#' Unweighted Tabs
+#'
 #' Run unweighted crosstabs on one or two variables, using quoted inputs.
 #'
 #' @param df input dataframe
@@ -247,6 +275,8 @@ utab <- function(df, v1, v2 = "NULL", nsize = FALSE, ci = FALSE) {
 }
 
 
+#' Tabs - Quoted Input
+#'
 #' Run weighted or unweighted crosstabs on one or two variables, using quoted inputs.
 #'
 #' @param df input dataframe
@@ -256,21 +286,24 @@ utab <- function(df, v1, v2 = "NULL", nsize = FALSE, ci = FALSE) {
 #' @param sdesign survey package surveydesign object.  DEFAULT NULL
 #' @param nsize boolean flag to include n-sizes in output.  DEFAULT FALSE
 #' @param ci boolean flag to include lower- and upper- bounds of confidence intervals.  DEFAULT FALSE
+#' @param to_factor boolean flag to convert v1/v2 to factors, if needed.  DEFAULT TRUE
 #' @return dataframe of tab results
 #' @seealso \code{\link{wtab}}, \code{\link{utab}} which this function wraps
 #' @export
-stab <- function(df, v1, v2 = "NULL", weight_var = NULL, sdesign = NULL, nsize = FALSE, ci = FALSE) {
+stab <- function(df, v1, v2 = "NULL", weight_var = NULL, sdesign = NULL, nsize = FALSE, ci = FALSE, to_factor=TRUE) {
 
     if (is.null(weight_var) & is.null(sdesign)) {
         est <- utab(df, v1, v2 = v2, nsize = nsize, ci = ci)
     } else {
-        est <- wtab(df, v1, v2 = v2, weight_var = weight_var, sdesign = sdesign, nsize = nsize, ci = ci)
+        est <- wtab(df, v1, v2 = v2, weight_var = weight_var, sdesign = sdesign, nsize = nsize, ci = ci, to_factor=to_factor)
     }
 
     return(est)
 }
 
 
+#' Tabs - Unquoted Input
+#'
 #' Run weighted or unweighted crosstabs on one or two variables, using unquoted inputs.
 #'
 #' @param df input dataframe
@@ -280,22 +313,25 @@ stab <- function(df, v1, v2 = "NULL", weight_var = NULL, sdesign = NULL, nsize =
 #' @param sdesign survey package surveydesign object.  DEFAULT NULL
 #' @param nsize boolean flag to include n-sizes in output.  DEFAULT FALSE
 #' @param ci boolean flag to include lower- and upper- bounds of confidence intervals.  DEFAULT FALSE
+#' @param to_factor boolean flag to convert v1/v2 to factors, if needed.  DEFAULT TRUE
 #' @return dataframe of tab results
 #' @seealso \code{\link{stab}} which this function wraps
 #' @export
-tab <- function(df, v1, v2 = NULL, weight_var = NULL, sdesign = NULL, nsize = FALSE, ci = FALSE) {
+tab <- function(df, v1, v2 = NULL, weight_var = NULL, sdesign = NULL, nsize = FALSE, ci = FALSE, to_factor=TRUE) {
 
     wt_str <- deparse(substitute(weight_var))
     v1_str <- deparse(substitute(v1))
     v2_str <- deparse(substitute(v2))
     paste(c(v1_str, v2_str, wt_str))
 
-    est <- stab(df, v1_str, v2 = v2_str, weight_var = wt_str, sdesign = sdesign, nsize = nsize, ci = ci)
+    est <- stab(df, v1_str, v2 = v2_str, weight_var = wt_str, sdesign = sdesign, nsize = nsize, ci = ci, to_factor=to_factor)
 
     return(est)
 }
 
 
+#' Clean Up Column Names
+#'
 #' Convert machine-readable tab column names to human-readable names.
 #'
 #' @param col_name string column name

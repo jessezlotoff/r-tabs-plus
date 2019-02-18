@@ -2,7 +2,7 @@
 % Please edit documentation in R/tab_functions.R
 \name{reorder_columns}
 \alias{reorder_columns}
-\title{Reorder dataframe columns to display in logical order for tabs.}
+\title{Reorder Tab Columns}
 \usage{
 reorder_columns(df)
 }

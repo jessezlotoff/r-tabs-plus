@@ -2,7 +2,7 @@
 % Please edit documentation in R/tab_functions.R
 \name{utab}
 \alias{utab}
-\title{Run unweighted crosstabs on one or two variables, using quoted inputs.}
+\title{Unweighted Tabs}
 \usage{
 utab(df, v1, v2 = "NULL", nsize = FALSE, ci = FALSE)
 }

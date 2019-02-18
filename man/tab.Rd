@@ -2,10 +2,10 @@
 % Please edit documentation in R/tab_functions.R
 \name{tab}
 \alias{tab}
-\title{Run weighted or unweighted crosstabs on one or two variables, using unquoted inputs.}
+\title{Tabs - Unquoted Input}
 \usage{
 tab(df, v1, v2 = NULL, weight_var = NULL, sdesign = NULL,
-  nsize = FALSE, ci = FALSE)
+  nsize = FALSE, ci = FALSE, to_factor = TRUE)
 }
 \arguments{
 \item{df}{input dataframe}
@@ -21,6 +21,8 @@ tab(df, v1, v2 = NULL, weight_var = NULL, sdesign = NULL,
 \item{nsize}{boolean flag to include n-sizes in output.  DEFAULT FALSE}
 
 \item{ci}{boolean flag to include lower- and upper- bounds of confidence intervals.  DEFAULT FALSE}
+
+\item{to_factor}{boolean flag to convert v1/v2 to factors, if needed.  DEFAULT TRUE}
 }
 \value{
 dataframe of tab results
