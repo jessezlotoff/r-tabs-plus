@@ -36,6 +36,44 @@ reorder_columns <- function(df) {
 }
 
 
+#' Valid Tab Inputs
+#'
+#' Check input dataframe and column(s) to tab functions.
+#'
+#' @param df dataframe to check
+#' @param v1 variable name to check
+#' @param v2 variable name to check.  DEFAULT "NULL"
+#' @return error/warning message, or empty string
+#' @export
+#'
+valid_tab_inputs <- function(df, v1, v2="NULL") {
+
+    if (!is.data.frame(df)) {
+        return("first argument is not a dataframe")
+    }
+
+    if (!is.element(v1,names(df))) {
+        return(paste(v1, "not present in dataframe"))
+    }
+
+    if ("vv1" %in% names(df)) {
+        return("vv1 already present in dataframe")
+    }
+
+    if (v2!="NULL") {
+        if (!is.element(v2,names(df))) {
+            return(paste(v2, "not present in dataframe"))
+        }
+
+        if ("vv2" %in% names(df)) {
+            return("vv2 already present in dataframe")
+        }
+    }
+
+    return("")
+}
+
+
 #' Weighted Tabs
 #'
 #' Run weighted crosstabs on one or two variables, using quoted inputs.
@@ -55,6 +93,12 @@ wtab <- function(df, v1, v2 = "NULL", weight_var = NULL, sdesign = NULL, nsize =
     require(dplyr)
     require(tibble)
     require(stringr)
+
+    # check input
+    msg <- valid_tab_inputs(df, v1, v2)
+    if (msg!="") {
+        stop(msg)
+    }
 
     # drop NA values of v1 and, if needed, v2
     df <- df %>%
@@ -201,6 +245,12 @@ utab <- function(df, v1, v2 = "NULL", nsize = FALSE, ci = FALSE) {
 
     require(dplyr)
     require(tibble)
+
+    # check input
+    msg <- valid_tab_inputs(df, v1, v2)
+    if (msg!="") {
+        stop(msg)
+    }
 
     est <- df %>%
         select(one_of(v1)) %>%
