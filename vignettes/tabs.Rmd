@@ -1,0 +1,106 @@
+---
+title: "Using Tab Function(s)"
+author: "Jesse Zlotoff"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+#suppressPackageStartupMessages(library(rtabsplus))
+library(devtools)
+load_all()
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+suppressPackageStartupMessages(tab(iris,Species))
+```
+
+The rtabsplus package includes multiple versions of the `tab` function.
+
+## One-way Tab, Unweighted
+
+The most basic usage is to tabulate proportions of a factor variable.  Using the **iris** dataset as an example:
+
+```{r}
+# tab function
+#   usage: tab(df, v1) where df is a dataframe and v1 is the column name
+tab(iris, Species)
+```
+
+This provides similar functionality as the built-in `table` function with a few key differences.  It gives column proportions instead of case sizes and returns the results as a tibble.  You can use the optional `nsize` parameter to include those values as well.
+
+```{r}
+# tab function
+tab(iris, Species, nsize=TRUE)
+
+# compare to built-in table function
+table(iris$Species)
+```
+
+There is also an option to include the upper and lower bounds of the 95% confidence interval.  Although this is not survey data, it is calculated here for demonstration purposes.
+
+```{r}
+# tab function
+tab(iris, Species, nsize=TRUE, ci=TRUE)
+```
+
+## Two-way Tabs, Unweighted
+
+The `tab` function can also handle two-way tabulations by specifying the optional `v2` parameter.
+
+```{r}
+# tab function
+#   usage: tab(df, v1, v2=v2)
+tab(iris, Species, v2=Petal.Width)
+```
+
+Again, the results are a tibble with column proportions, including Total.  Additional columns such as "n_" (for nsize) or "lci_", "uci_" (for ci) use the standard prefixes before the specific column name.
+
+Note, the order of the variables matters.
+
+```{r}
+# Species vs Petal.Width
+#   usage: tab(df, v1, v2=v2, nsize=FALSE)
+tab(iris, Species, v2=Petal.Width)
+
+# Petal.Width vs Species (will be different)
+#   usage: tab(df, v1, v2=v2, nsize=FALSE)
+tab(iris, Petal.Width, v2=Species)
+```
+
+## Weighted Tabs
+
+To calculate weighted tabs, use the optional `weight_var` or `sdesign` parameters.  The first takes the name of a column with weights and the second takes a survey design object from the survey package.
+
+Again, using the **iris** package even though it's not survey data:
+
+```{r}
+tab(iris, Species, weight_var = Petal.Length)
+```
+
+## Technical Notes
+
+Full specification: 
+
+```{r, eval=FALSE}
+tab(df, v1, v2 = NULL, weight_var = NULL, sdesign = NULL, nsize = FALSE, ci = FALSE, to_factor=TRUE)
+```
+
+The function creates a temporary `vv1`, and if v2 is specified `vv2`, variable(s) in the data.  The function checks that this/these columns are not present before running, otherwise printing an error with no output.
+
+The `stab` function (think s-tab) works the same way except that it takes quoted inputs.
+```{r}
+# s-tab version
+stab(iris, "Species", v2="Petal.Width")
+
+# equivalent tab version
+tab(iris, Species, v2=Petal.Width)
+```
+
+The `tab` function wraps `stab`, which in turn wraps `utab` (for unweighted) and `wtab` (for weighted).
+

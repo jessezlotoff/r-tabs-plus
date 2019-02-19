@@ -1,6 +1,6 @@
 ### Testing of rtabsplus - tab functions
 # Jesse Zlotoff
-# 2/18/19
+# 2/19/19
 
 context("tab functions")
 library(rtabsplus)
@@ -9,6 +9,7 @@ data(mtcars)
 
 test_that("output is a tibble", {
     expect_true(is_tibble(stab(mtcars, "gear")))
+    expect_true(is_tibble(stab(mtcars, "gear", "carb")))
 })
 
 test_that("inputs are converted to factors", {

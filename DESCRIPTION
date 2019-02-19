@@ -1,6 +1,6 @@
 Package: rtabsplus
 Title: Tabulate One or Two Variables
-Version: 0.0.1.0000
+Version: 0.0.1
 Authors@R: 
     person(given = "Jesse",
            family = "Zlotoff",
@@ -10,7 +10,6 @@ Description: A set of tools for running tabs on factor variables that returns
   the restuls as a dataframe.  Can tab one or two variables against each other, 
   weighted or unweighted.  Includes separate versions for quoted and non-quoted 
   input.
-Depends: R (>=3.5.2)
 License: GNU GPL v3.0
 Encoding: UTF-8
 LazyData: true
@@ -21,4 +20,7 @@ Imports:
     tibble,
     stringr
 Suggests: 
-    testthat
+    testthat,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

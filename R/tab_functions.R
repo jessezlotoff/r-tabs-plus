@@ -1,6 +1,6 @@
 ### tab functions
 # Jesse Zlotoff
-# 2/18/19
+# 2/19/19
 
 library(survey)
 
@@ -245,6 +245,8 @@ utab <- function(df, v1, v2 = "NULL", nsize = FALSE, ci = FALSE) {
 
     require(dplyr)
     require(tibble)
+    require(tidyr)
+    require(stringr)
 
     # check input
     msg <- valid_tab_inputs(df, v1, v2)
@@ -340,9 +342,9 @@ utab <- function(df, v1, v2 = "NULL", nsize = FALSE, ci = FALSE) {
 #' @return dataframe of tab results
 #' @seealso \code{\link{wtab}}, \code{\link{utab}} which this function wraps
 #' @export
-stab <- function(df, v1, v2 = "NULL", weight_var = NULL, sdesign = NULL, nsize = FALSE, ci = FALSE, to_factor=TRUE) {
+stab <- function(df, v1, v2 = "NULL", weight_var = "NULL", sdesign = NULL, nsize = FALSE, ci = FALSE, to_factor=TRUE) {
 
-    if (is.null(weight_var) & is.null(sdesign)) {
+    if (weight_var=="NULL" & is.null(sdesign)) {
         est <- utab(df, v1, v2 = v2, nsize = nsize, ci = ci)
     } else {
         est <- wtab(df, v1, v2 = v2, weight_var = weight_var, sdesign = sdesign, nsize = nsize, ci = ci, to_factor=to_factor)
