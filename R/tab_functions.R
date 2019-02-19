@@ -2,7 +2,6 @@
 # Jesse Zlotoff
 # 2/19/19
 
-require(survey)
 
 #' Reorder Tab Columns
 #'
@@ -343,6 +342,8 @@ utab <- function(df, v1, v2 = "NULL", nsize = FALSE, ci = FALSE) {
 #' @seealso \code{\link{wtab}}, \code{\link{utab}} which this function wraps
 #' @export
 stab <- function(df, v1, v2 = "NULL", weight_var = "NULL", sdesign = NULL, nsize = FALSE, ci = FALSE, to_factor=TRUE) {
+
+    require(survey)
 
     if (weight_var=="NULL" & is.null(sdesign)) {
         est <- utab(df, v1, v2 = v2, nsize = nsize, ci = ci)
