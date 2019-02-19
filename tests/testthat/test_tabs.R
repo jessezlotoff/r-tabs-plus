@@ -4,6 +4,7 @@
 
 context("tab functions")
 library(rtabsplus)
+require(tibble)
 
 data(mtcars)
 

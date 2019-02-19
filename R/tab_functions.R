@@ -2,7 +2,7 @@
 # Jesse Zlotoff
 # 2/19/19
 
-library(survey)
+require(survey)
 
 #' Reorder Tab Columns
 #'
