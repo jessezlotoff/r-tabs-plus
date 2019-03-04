@@ -49,6 +49,14 @@ There is also an option to include the upper and lower bounds of the 95% confide
 tab(iris, Species, nsize=TRUE, ci=TRUE)
 ```
 
+The tab function also takes an optional parameter to create collapsed categories.  Each new category is specified in a list as "new label"=c(inputs).  Use "@auto" at the start of a label to auto-generate it.
+
+```{r}
+# tab function
+my_collapses = list("@auto" = c("versicolor","virginica"), "@auto2" = c("setosa"))
+tab(iris, Species, collapses=my_collapses)
+```
+
 ## Two-way Tabs, Unweighted
 
 The `tab` function can also handle two-way tabulations by specifying the optional `v2` parameter.
@@ -88,7 +96,7 @@ tab(iris, Species, weight_var = Petal.Length)
 Full specification: 
 
 ```{r, eval=FALSE}
-tab(df, v1, v2 = NULL, weight_var = NULL, sdesign = NULL, nsize = FALSE, ci = FALSE, to_factor=TRUE)
+tab(df, v1, v2 = NULL, weight_var = NULL, sdesign = NULL, nsize = FALSE, ci = FALSE, to_factor=TRUE, collapses=list())
 ```
 
 The function creates a temporary `vv1`, and if v2 is specified `vv2`, variable(s) in the data.  The function checks that this/these columns are not present before running, otherwise printing an error with no output.

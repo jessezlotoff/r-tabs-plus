@@ -1,7 +1,47 @@
 ### tab functions
 # Jesse Zlotoff
-# 2/19/19
+# 3/4/19
 
+
+#' Build Collapses
+#'
+#' Combine values in a given column to create collapsed categories
+#'
+#' @param df dataframe to edit
+#' @param variable string variable/column name to edit
+#' @param collapses list of collapses with "label"=c(inputs).  use "@auto" to auto-generate labels.
+#' @return collapsed dataframe
+#' @export
+#'
+collapser <- function(df, variable, collapses) {
+
+    require(lazyeval)
+    require(dplyr)
+
+    new_levels <- c()
+    for(lab in names(collapses)) {
+        if(substr(lab,1,5) == "@auto") {
+            new_lab <- paste(unlist(collapses[lab]), collapse='/')
+        }
+        else {
+            new_lab <- lab
+        }
+        new_levels <- c(new_levels, new_lab)
+
+        for(v in unlist(collapses[lab])) {
+            m_call <- lazyeval::interp(quote(ifelse(variable==v, new_lab, as.character(variable))),
+                                     variable=as.name(variable))
+            df <- df %>%
+                mutate_(.dots = setNames(list(m_call), variable))
+        }
+    }
+
+    m_call <- lazyeval::interp(quote(factor(variable, levels=new_levels)),
+                               variable=as.name(variable))
+    df <- df %>%
+        mutate_(.dots = setNames(list(m_call), variable))
+    return(df)
+}
 
 #' Reorder Tab Columns
 #'
@@ -338,10 +378,11 @@ utab <- function(df, v1, v2 = "NULL", nsize = FALSE, ci = FALSE) {
 #' @param nsize boolean flag to include n-sizes in output.  DEFAULT FALSE
 #' @param ci boolean flag to include lower- and upper- bounds of confidence intervals.  DEFAULT FALSE
 #' @param to_factor boolean flag to convert v1/v2 to factors, if needed.  DEFAULT TRUE
+#' @param collapses list of categories to collapse as "new name"=c(inputs) DEFAULT list()
 #' @return dataframe of tab results
 #' @seealso \code{\link{wtab}}, \code{\link{utab}} which this function wraps
 #' @export
-stab <- function(df, v1, v2 = "NULL", weight_var = "NULL", sdesign = NULL, nsize = FALSE, ci = FALSE, to_factor=TRUE) {
+stab <- function(df, v1, v2 = "NULL", weight_var = "NULL", sdesign = NULL, nsize = FALSE, ci = FALSE, to_factor=TRUE, collapses=list()) {
 
     require(survey)
 
@@ -349,6 +390,18 @@ stab <- function(df, v1, v2 = "NULL", weight_var = "NULL", sdesign = NULL, nsize
         est <- utab(df, v1, v2 = v2, nsize = nsize, ci = ci)
     } else {
         est <- wtab(df, v1, v2 = v2, weight_var = weight_var, sdesign = sdesign, nsize = nsize, ci = ci, to_factor=to_factor)
+    }
+
+    if (length(collapses) > 0) {
+        cdf <- collapser(df, v1, collapses)
+        if (weight_var=="NULL" & is.null(sdesign)) {
+            est2 <- utab(cdf, v1, v2 = v2, nsize = nsize, ci = ci)
+        } else {
+            est2 <- wtab(cdf, v1, v2 = v2, weight_var = weight_var, sdesign = sdesign, nsize = nsize, ci = ci, to_factor=to_factor)
+        }
+
+        est <- est %>%
+            bind_rows(est2)
     }
 
     return(est)
@@ -367,17 +420,18 @@ stab <- function(df, v1, v2 = "NULL", weight_var = "NULL", sdesign = NULL, nsize
 #' @param nsize boolean flag to include n-sizes in output.  DEFAULT FALSE
 #' @param ci boolean flag to include lower- and upper- bounds of confidence intervals.  DEFAULT FALSE
 #' @param to_factor boolean flag to convert v1/v2 to factors, if needed.  DEFAULT TRUE
+#' @param collapses list of categories to collapse as "new name"=c(inputs) DEFAULT list()
 #' @return dataframe of tab results
 #' @seealso \code{\link{stab}} which this function wraps
 #' @export
-tab <- function(df, v1, v2 = NULL, weight_var = NULL, sdesign = NULL, nsize = FALSE, ci = FALSE, to_factor=TRUE) {
+tab <- function(df, v1, v2 = NULL, weight_var = NULL, sdesign = NULL, nsize = FALSE, ci = FALSE, to_factor=TRUE, collapses=list()) {
 
     wt_str <- deparse(substitute(weight_var))
     v1_str <- deparse(substitute(v1))
     v2_str <- deparse(substitute(v2))
     paste(c(v1_str, v2_str, wt_str))
 
-    est <- stab(df, v1_str, v2 = v2_str, weight_var = wt_str, sdesign = sdesign, nsize = nsize, ci = ci, to_factor=to_factor)
+    est <- stab(df, v1_str, v2 = v2_str, weight_var = wt_str, sdesign = sdesign, nsize = nsize, ci = ci, to_factor=to_factor, collapses=collapses)
 
     return(est)
 }

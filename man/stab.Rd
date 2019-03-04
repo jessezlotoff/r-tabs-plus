@@ -4,8 +4,8 @@
 \alias{stab}
 \title{Tabs - Quoted Input}
 \usage{
-stab(df, v1, v2 = "NULL", weight_var = NULL, sdesign = NULL,
-  nsize = FALSE, ci = FALSE, to_factor = TRUE)
+stab(df, v1, v2 = "NULL", weight_var = "NULL", sdesign = NULL,
+  nsize = FALSE, ci = FALSE, to_factor = TRUE, collapses = list())
 }
 \arguments{
 \item{df}{input dataframe}
@@ -23,6 +23,8 @@ stab(df, v1, v2 = "NULL", weight_var = NULL, sdesign = NULL,
 \item{ci}{boolean flag to include lower- and upper- bounds of confidence intervals.  DEFAULT FALSE}
 
 \item{to_factor}{boolean flag to convert v1/v2 to factors, if needed.  DEFAULT TRUE}
+
+\item{collapses}{list of categories to collapse as "new name"=c(inputs) DEFAULT list()}
 }
 \value{
 dataframe of tab results

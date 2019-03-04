@@ -1,6 +1,6 @@
 ### Testing of rtabsplus - tab functions
 # Jesse Zlotoff
-# 2/19/19
+# 3/4/19
 
 context("tab functions")
 library(rtabsplus)
@@ -28,3 +28,10 @@ test_that("invalid inputs are handled correctly", {
     expect_error(stab(temp, "gear"), "vv1 already present in dataframe")
     expect_error(stab(temp$vv1, "gear"), "first argument is not a dataframe")
 })
+
+test_that("collapser adds rows", {
+    mtcars$gear2 <- mtcars$gear
+    output <- stab(mtcars, "gear", collapses=list("<4"=c(3), "@auto"=c(4,5)))
+    expect_true(nrow(output)==5)
+})
+
