@@ -1,6 +1,6 @@
 ### Testing of rtabsplus - tab functions
 # Jesse Zlotoff
-# 3/4/19
+# 3/11/19
 
 context("tab functions")
 library(rtabsplus)
@@ -34,4 +34,27 @@ test_that("collapser adds rows", {
     output <- stab(mtcars, "gear", collapses=list("<4"=c(3), "@auto"=c(4,5)))
     expect_true(nrow(output)==5)
 })
+
+
+# build state dataset for additional testing
+data(state)
+state <- state.region %>%
+    as_tibble() %>%
+    rename(region = value)
+
+division <- state.division %>%
+    as_tibble() %>%
+    rename(division = value)
+
+abb <- state.abb %>%
+    as_tibble() %>%
+    rename(abb = value)
+
+state <- state %>%
+    bind_cols(division, abb)
+
+state <- state %>%
+    mutate(block = ifelse(grepl("^[A-M].*", abb), "A-M", "N-Z"))
+rm(division, abb)
+save(state, file="state.rdata")
 
